@@ -1,5 +1,5 @@
 # web-dodge-game 
-side project - web based avoid game
+side project - web based dodge game
 
 
 expected 

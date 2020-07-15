@@ -1,11 +1,15 @@
-const logger = (socket) => (...args) =>
-	console.log(`[${socket.id.substring(0, 6)}]`, ...args)
+const logger = require('../../modules/logger')
+
+const CustomLog = (socket) => ({
+	info: (msg = '') => logger.info(`[${socket.id.substring(0, 6)}] ${msg}`),
+})
 
 module.exports = (server) => {
 	const io = require('socket.io')(server)
-	console.log('socket loaded!')
+	logger.info('socket loaded!')
+
 	io.on('connection', (socket) => {
-		const log = logger(socket)
-		log(`접속`)
+		const logger = CustomLog(socket)
+		logger.info(`connected`)
 	})
 }

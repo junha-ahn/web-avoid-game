@@ -3,6 +3,7 @@ const express = require('express')
 const path = require('path')
 
 const socketLoader = require('./loaders/socket')
+const logger = require('./modules/logger')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -14,5 +15,5 @@ const server = http.createServer(app)
 socketLoader(server)
 
 server.listen(PORT, () => {
-	console.log(`Server listening on port: ${PORT} (http://127.0.0.1:${PORT})`)
+	logger.info(`Server listening on port: ${PORT} (http://127.0.0.1:${PORT})`)
 })

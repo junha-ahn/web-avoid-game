@@ -6,8 +6,6 @@ const CustomLog = (socket) => ({
 
 module.exports = (server) => {
 	const io = require('socket.io')(server)
-	logger.info('socket loaded!')
-
 	io.on('connection', (socket) => {
 		const logger = CustomLog(socket)
 		logger.info(`connected`)

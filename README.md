@@ -1,4 +1,4 @@
-# web-avoid-game
+# web-dodge-game 
 side project - web based avoid game
 
 

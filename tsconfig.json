@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "moduleResolution": "node",
+    "module": "CommonJS",
+
+    // "baseUrl": "./src",
+    "outDir": "dist",
+
+    // "declaration": true,
+
+    // "strict": true,
+
+    // "sourceMap": true,
+  }
+}

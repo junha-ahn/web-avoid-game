@@ -1,11 +1,16 @@
-const logger = require('../../modules/logger')
+import * as socket from 'socket.io'
+import { Server } from 'http'
 
-const CustomLog = (socket) => ({
+import logger from '../../modules/logger'
+
+const CustomLog = (socket: socket.Socket) => ({
 	info: (msg = '') => logger.info(`[${socket.id.substring(0, 6)}] ${msg}`),
 })
 
 class DodgeGame {
-	constructor(players) {
+	players: Map<string, {}>
+	projectiles: any[]
+	constructor(players: string[]) {
 		this.players = new Map(players.map((e) => [e, {}]))
 		this.projectiles = []
 	}
@@ -14,7 +19,7 @@ class DodgeGame {
 		return false
 	}
 
-	parse(id) {
+	parse(id: string) {
 		const entries = Array.from(this.players.entries())
 		return {
 			players: entries.map(([pid, pValue]) => ({
@@ -27,10 +32,10 @@ class DodgeGame {
 	}
 }
 
-module.exports = (server) => {
-	const io = require('socket.io')(server)
+export default (server: Server) => {
+	const io = socket(server)
 
-	let dodgeGame
+	let dodgeGame: DodgeGame
 	io.on('connection', (socket) => {
 		const logger = CustomLog(socket)
 		logger.info(`connected`)

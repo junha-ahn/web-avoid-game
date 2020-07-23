@@ -1,8 +1,6 @@
-const http = require('http')
-const express = require('express')
-const path = require('path')
-
-const logger = require('./modules/logger')
+import * as http from 'http'
+import * as express from 'express'
+import logger from './modules/logger'
 
 const app = express()
 const PORT = process.env.PORT || 3000

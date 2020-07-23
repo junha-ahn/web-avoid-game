@@ -1,7 +1,7 @@
-const winston = require('winston')
+import * as winston from 'winston'
 const format = winston.format
 
-module.exports = winston.createLogger({
+export default winston.createLogger({
 	level: 'info',
 	format: format.combine(
 		format.timestamp({
@@ -15,7 +15,7 @@ module.exports = winston.createLogger({
 			format: format.combine(
 				format.colorize(),
 				format.printf(
-					(info) => `${info.timestamp} ${info.level}: ${info.message}`,
+					(info: any) => `${info.timestamp} ${info.level}: ${info.message}`,
 				),
 			),
 		}),

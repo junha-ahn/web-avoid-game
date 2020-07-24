@@ -5,8 +5,10 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node dist/index.js",
-		"build": "tsc",
-		"dev": "nodemon --watch 'src/**/*.ts'--exec 'ts-node' src/index.ts"
+		"compile": "tsc",
+		"html": "cp -r ./src/public/ ./dist/public/",
+		"build": "npm run compile && npm run html",
+		"dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
 	},
 	"repository": {
 		"type": "git",

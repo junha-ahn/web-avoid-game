@@ -5,25 +5,39 @@ const config = {
 	PROJECTILE_RESPONSE_TIME: 30,
 }
 
-const random = (max, min = 0) => Math.random() * (max - min) + min
-const randomColor = [random(255), random(255), random(255)]
+type colorType = [number, number, number]
+
+const random = (max, min = 0): number => Math.random() * (max - min) + min
+const randomColor = (): colorType => [random(255), random(255), random(255)]
 
 class Square {
-	target = undefined // only for Projectile
-	constructor(x, y, size, color, speed, target) {
-		this.isActive = true
-		this.x = x
-		this.y = y
-		this.size = size
-		this.color = color
-		this.speed = speed
+	public isActive = true
+	public target // only for Projectile
+	constructor(
+		public x: number,
+		public y: number,
+		public size: number,
+		public color: colorType,
+		public speed: number,
+		target?,
+	) {
 		this.target = target
+	}
+
+	get position() {
+		return {
+			x: this.x,
+			y: this.y,
+		}
 	}
 }
 
-module.exports = class GameContoller {
-	difficulty = 2
-	startedAt = Date.now()
+export default class GameController {
+	public difficulty = 2
+	public startedAt = Date.now()
+
+	public players: Map<string, Square>
+	public projectiles: Square[] = []
 	/**
 	 * @param  {string[]} players players's socket id
 	 */
@@ -40,16 +54,15 @@ module.exports = class GameContoller {
 				),
 			]),
 		)
-		this.projectiles = []
 	}
 
 	createProjectile() {
 		const plane = random(1) > 0.5
 
 		/* 모서리에 사각형만 생성하도록 함 */
-		const x = plane ? random(config.WIDTH) : random() > 0.5 ? 0 : config.WIDTH
+		const x = plane ? random(config.WIDTH) : random(1) > 0.5 ? 0 : config.WIDTH
 		const y = plane
-			? random() > 0.5
+			? random(1) > 0.5
 				? 0
 				: config.HEIGHT
 			: random(config.HEIGHT)
@@ -59,15 +72,16 @@ module.exports = class GameContoller {
 			y,
 			random(35),
 			randomColor(),
-			difficulty,
+			this.difficulty,
 			// player.position,
 		)
 	}
 
 	addProjectile() {
 		const time = this.startedAt - Date.now()
-		if (this.projectiles.length <= time / PROJECTILE_RESPONSE_TIME) {
-			if (random(this.difficulty) > 1.25) projectiles.push(createProjectile())
+		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
+			if (random(this.difficulty) > 1.25)
+				this.projectiles.push(this.createProjectile())
 			this.difficulty += 0.1
 		}
 	}

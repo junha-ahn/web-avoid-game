@@ -30,6 +30,38 @@ class Square {
 			y: this.y,
 		}
 	}
+	end() {
+		this.isActive = false
+	}
+	isOffscreen() {
+		return (
+			this.x < 0 ||
+			this.x + this.size > config.WIDTH ||
+			this.y < 0 ||
+			this.y + this.size > config.HEIGHT
+		)
+	}
+	collidesWith(square: Square) {
+		// 투사체(this) 위치 계산
+
+		const center = {
+			x: this.position.x + this.size / 2,
+			y: this.position.y + this.size / 2,
+		}
+
+		// player 위치 계산
+		const rightBound = {
+			x: square.position.x + square.size,
+			y: square.position.y + square.size,
+		}
+
+		return !(
+			center.x < square.position.x ||
+			center.x > rightBound.x ||
+			center.y < square.position.y ||
+			center.y > rightBound.y
+		)
+	}
 }
 
 export default class GameController {
@@ -41,7 +73,7 @@ export default class GameController {
 	/**
 	 * @param  {string[]} players players's socket id
 	 */
-	constructor(players) {
+	constructor(players: string[]) {
 		this.players = new Map(
 			players.map((id) => [
 				id,
@@ -86,15 +118,41 @@ export default class GameController {
 		}
 	}
 
-	update(data) {
+	handlePlayer(player: Square, x: number, y: number) {
+		player.x = x
+		player.y = y
+		if (player.isOffscreen()) player.end()
+	}
+	handleProjectiles() {
+		for (const projectile of this.projectiles) {
+			const players = this.players.values()
+			if (projectile.isOffscreen()) projectile.end()
+
+			for (const player of players) {
+				if (projectile.collidesWith(player)) player.end()
+			}
+		}
+	}
+
+	/**
+	 * @param  {string} id
+	 * @param  {{x:number;y:number}} data x/y is player's mouse X/Y point
+	 */
+	update(id: string, data: { x: number; y: number }) {
+		this.handlePlayer(this.players.get(id), data.x, data.y)
+		this.handleProjectiles()
 		this.addProjectile()
 	}
 
 	isEnd() {
-		return false
+		return Array.from(this.players.entries()).every(
+			([id, player]) => !player.isActive,
+		)
 	}
-
-	parse(id) {
+	/**
+	 * @param  {string} id player socket id
+	 */
+	parse(id: string) {
 		const entries = Array.from(this.players.entries())
 		return {
 			startedAt: this.startedAt,

@@ -1,9 +1,9 @@
-import Vector from './p5/Vector'
+import * as Vector from './p5/vector'
 
 type colorType = [number, number, number]
 
 export class Player {
-	public isActive = true
+	public endedAt
 	public position
 	public velocity
 	public acceleration
@@ -14,7 +14,7 @@ export class Player {
 		this.acceleration = new Vector()
 	}
 	end() {
-		this.isActive = false
+		this.endedAt = Date.now
 	}
 	update(x: number, y: number) {
 		const mouse = new Vector(x, y)

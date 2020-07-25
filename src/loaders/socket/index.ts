@@ -20,8 +20,8 @@ export default (server: Server) => {
 			logger.info('on: started-game')
 			if (!gameController || gameController.isEnd()) {
 				gameController = new GameController(Object.keys(io.sockets.sockets))
-				io.emit('started-game', gameController.parse(socket.id))
 			}
+			io.emit('on-game', gameController.parse(socket.id))
 		})
 
 		socket.on('on-game', (data) => {

@@ -37,7 +37,9 @@ export default class GameController {
 			]),
 		)
 	}
-
+	get score() {
+		return Date.now() - this.startedAt
+	}
 	createProjectile() {
 		const plane = random(1) > 0.5
 
@@ -69,6 +71,7 @@ export default class GameController {
 	}
 
 	handlePlayer(player: Player, x: number, y: number) {
+		if (!player) return
 		player.update(x, y)
 		if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
 	}
@@ -100,7 +103,7 @@ export default class GameController {
 
 	isEnd() {
 		return Array.from(this.players.entries()).every(
-			([id, player]) => !player.isActive,
+			([id, player]) => player.endedAt,
 		)
 	}
 	/**
@@ -109,6 +112,7 @@ export default class GameController {
 	parse(id: string) {
 		const entries = Array.from(this.players.entries())
 		return {
+			score: this.score,
 			startedAt: this.startedAt,
 			players: entries.map(([pid, pValue]) => ({
 				// isEnd: false,

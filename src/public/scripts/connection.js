@@ -1,25 +1,25 @@
 const socket = io()
 
+const mouse = {
+	x: 0,
+	y: 0,
+}
 let players, projectiles
 
 function setup() {
 	createCanvas(1000, 800)
 
-	textAlign(CENTER)
-	textSize(40)
+	mouse.x = mouseX
+	mouse.y = mouseY
 }
 
 function draw() {
 	background(53) // 캔버스 바탕 화면 색상
-
-	drawScore() //버틴시간 화면에 표시
+	// drawScore()
 }
-
-// 스코어 (버틴시간)
-function drawScore() {
+function drawScore(score) {
 	noStroke()
-	text(frameCount, width / 2, 50)
-	// 스코어(버틴시간), 가로, 세로
+	text(score, width / 2, 50)
 }
 
 // 게임 종료!
@@ -31,3 +31,15 @@ function endGame() {
 	text('Game Over!', width / 2, height / 2)
 	textSize(40)
 }
+
+socket.emit('start-game')
+
+socket.on('on-game', (data) => {
+	new p5((p) => {
+		p.draw = () => {
+			noLoop()
+			drawScore(data.score)
+		}
+	})
+	socket.emit('on-game', mouse)
+})

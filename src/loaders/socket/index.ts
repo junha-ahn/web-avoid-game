@@ -2,7 +2,7 @@ import * as socket from 'socket.io'
 import { Server } from 'http'
 
 import logger from '../../modules/logger'
-import GameController from '../../modules/gameController'
+import GameController from '../../modules/game-controller'
 
 const CustomLog = (socket: socket.Socket) => ({
 	info: (msg = '') => logger.info(`[${socket.id.substring(0, 6)}] ${msg}`),

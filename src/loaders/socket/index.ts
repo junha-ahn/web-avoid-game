@@ -17,16 +17,20 @@ export default (server: Server) => {
 		logger.info(`connected`)
 
 		socket.on('start-game', () => {
-			gameController = new GameController(Object.keys(io.sockets.sockets))
-			socket.broadcast.emit('started-game', gameController.parse(socket.id))
+			logger.info('on: started-game')
+			if (!gameController || gameController.isEnd()) {
+				gameController = new GameController(Object.keys(io.sockets.sockets))
+				io.emit('started-game', gameController.parse(socket.id))
+			}
 		})
 
 		socket.on('on-game', (data) => {
+			// logger.info('on: on-game')
 			gameController.update(socket.id, data)
 			if (gameController.isEnd()) {
-				socket.broadcast.emit('ended-game', gameController.parse(socket.id))
+				io.emit('ended-game', gameController.parse(socket.id))
 			} else {
-				socket.broadcast.emit('on-game', gameController.parse(socket.id))
+				io.emit('on-game', gameController.parse(socket.id))
 			}
 		})
 	})

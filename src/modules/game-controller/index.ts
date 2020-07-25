@@ -1,3 +1,5 @@
+import { Player, Projectile } from './objects'
+
 const config = {
 	WIDTH: 1000,
 	HEIGHT: 800,
@@ -5,71 +7,19 @@ const config = {
 	PROJECTILE_RESPONSE_TIME: 30,
 }
 
-type colorType = [number, number, number]
-
 const random = (max, min = 0): number => Math.random() * (max - min) + min
-const randomColor = (): colorType => [random(255), random(255), random(255)]
-
-class Square {
-	public isActive = true
-	public target // only for Projectile
-	constructor(
-		public x: number,
-		public y: number,
-		public size: number,
-		public color: colorType,
-		public speed: number,
-		target?,
-	) {
-		this.target = target
-	}
-
-	get position() {
-		return {
-			x: this.x,
-			y: this.y,
-		}
-	}
-	end() {
-		this.isActive = false
-	}
-	isOffscreen() {
-		return (
-			this.x < 0 ||
-			this.x + this.size > config.WIDTH ||
-			this.y < 0 ||
-			this.y + this.size > config.HEIGHT
-		)
-	}
-	collidesWith(square: Square) {
-		// 투사체(this) 위치 계산
-
-		const center = {
-			x: this.position.x + this.size / 2,
-			y: this.position.y + this.size / 2,
-		}
-
-		// player 위치 계산
-		const rightBound = {
-			x: square.position.x + square.size,
-			y: square.position.y + square.size,
-		}
-
-		return !(
-			center.x < square.position.x ||
-			center.x > rightBound.x ||
-			center.y < square.position.y ||
-			center.y > rightBound.y
-		)
-	}
-}
+const randomColor = (): [number, number, number] => [
+	random(255),
+	random(255),
+	random(255),
+]
 
 export default class GameController {
 	public difficulty = 2
 	public startedAt = Date.now()
 
-	public players: Map<string, Square>
-	public projectiles: Square[] = []
+	public players: Map<string, Player>
+	public projectiles: Projectile[] = []
 	/**
 	 * @param  {string[]} players players's socket id
 	 */
@@ -77,7 +27,7 @@ export default class GameController {
 		this.players = new Map(
 			players.map((id) => [
 				id,
-				new Square(
+				new Player(
 					config.WIDTH / 2,
 					config.HEIGHT / 2,
 					config.PLAYER_SIZE,
@@ -98,14 +48,14 @@ export default class GameController {
 				? 0
 				: config.HEIGHT
 			: random(config.HEIGHT)
-
-		return new Square(
+		const players = Array.from(this.players.values())
+		return new Projectile(
 			x,
 			y,
 			random(35),
 			randomColor(),
 			this.difficulty,
-			// player.position,
+			players[random(players.length - 1)],
 		)
 	}
 
@@ -118,18 +68,22 @@ export default class GameController {
 		}
 	}
 
-	handlePlayer(player: Square, x: number, y: number) {
-		player.x = x
-		player.y = y
-		if (player.isOffscreen()) player.end()
+	handlePlayer(player: Player, x: number, y: number) {
+		player.update(x, y)
+		if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
 	}
 	handleProjectiles() {
-		for (const projectile of this.projectiles) {
-			const players = this.players.values()
-			if (projectile.isOffscreen()) projectile.end()
+		const projectiles = this.projectiles
+		for (let i = projectiles.length - 1; i >= 0; i--) {
+			this.projectiles[i].update()
 
+			// 투사체가 스크린 밖으로 나가면
+			if (projectiles[i].isOffscreen(config.WIDTH, config.HEIGHT))
+				projectiles.splice(i, 1)
+
+			const players = this.players.values()
 			for (const player of players) {
-				if (projectile.collidesWith(player)) player.end()
+				if (projectiles[i].collidesWith(player)) player.end()
 			}
 		}
 	}

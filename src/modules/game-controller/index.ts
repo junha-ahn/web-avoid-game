@@ -4,7 +4,7 @@ const config = {
 	WIDTH: 1000,
 	HEIGHT: 800,
 	PLAYER_SIZE: 30,
-	PROJECTILE_RESPONSE_TIME: 30,
+	PROJECTILE_RESPONSE_TIME: 3000,
 }
 
 const random = (max, min = 0): number => Math.random() * (max - min) + min
@@ -13,6 +13,9 @@ const randomColor = (): [number, number, number] => [
 	random(255),
 	random(255),
 ]
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 export default class GameController {
 	public difficulty = 2
@@ -37,6 +40,12 @@ export default class GameController {
 			]),
 		)
 	}
+	async init() {
+		while (!this.isEnd()) {
+			this.update()
+			await sleep(10)
+		}
+	}
 	get score() {
 		return Date.now() - this.startedAt
 	}
@@ -56,24 +65,24 @@ export default class GameController {
 			y,
 			random(35),
 			randomColor(),
-			this.difficulty,
 			players[random(players.length - 1)],
+			this.difficulty,
 		)
 	}
 
 	addProjectile() {
-		const time = this.startedAt - Date.now()
+		const time = Date.now() - this.startedAt
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
-			if (random(this.difficulty) > 1.25)
-				this.projectiles.push(this.createProjectile())
+			// if (random(this.difficulty) > 1.25)
+			// 	this.projectiles.push(this.createProjectile())
 			this.difficulty += 0.1
 		}
 	}
 
-	handlePlayer(player: Player, x: number, y: number) {
+	updatePlayer(id: string, x: number, y: number) {
+		const player = this.players.get(id)
 		if (!player) return
-		player.update(x, y)
-		if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
+		player.updateMouse(x, y)
 	}
 	handleProjectiles() {
 		const projectiles = this.projectiles
@@ -82,7 +91,7 @@ export default class GameController {
 
 			// 투사체가 스크린 밖으로 나가면
 			if (projectiles[i].isOffscreen(config.WIDTH, config.HEIGHT))
-				projectiles.splice(i, 1)
+				return projectiles.splice(i, 1)
 
 			const players = this.players.values()
 			for (const player of players) {
@@ -91,12 +100,12 @@ export default class GameController {
 		}
 	}
 
-	/**
-	 * @param  {string} id
-	 * @param  {{x:number;y:number}} data x/y is player's mouse X/Y point
-	 */
-	update(id: string, data: { x: number; y: number }) {
-		this.handlePlayer(this.players.get(id), data.x, data.y)
+	private update() {
+		for (const player of this.players.values()) {
+			player.update()
+			console.log(player)
+			if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
+		}
 		this.handleProjectiles()
 		this.addProjectile()
 	}

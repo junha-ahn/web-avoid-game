@@ -1,21 +1,49 @@
 const socket = io()
 
+let players, projectiles
+
 const mouse = {
 	x: 0,
 	y: 0,
 }
-let players, projectiles
+let ServerData = {}
 
 function setup() {
 	createCanvas(1000, 800)
 
-	mouse.x = mouseX
-	mouse.y = mouseY
+	textAlign(CENTER)
+	textSize(40)
 }
 
 function draw() {
+	// 10 ~ 20 ms 단위 실행
+
+	mouse.x = mouseX
+	mouse.y = mouseY
+
 	background(53) // 캔버스 바탕 화면 색상
-	// drawScore()
+	drawScore(ServerData.score)
+
+	handleProjectiles(ServerData.projectiles)
+	handlePlayer(ServerData.players)
+}
+
+function handlePlayer(players) {
+	for (p of players) {
+		const player = new Square(
+			p.position.x,
+			p.position.y,
+			p.size,
+			p.isMinse ? color('#FFFFFF') : color(p.color),
+		)
+		player.draw()
+	}
+}
+function handleProjectiles(projectiles) {
+	for (p of projectiles) {
+		const projectiles = new Square(p.position.x, p.position.y, p.size, p.color)
+		projectiles.draw()
+	}
 }
 function drawScore(score) {
 	noStroke()
@@ -35,11 +63,13 @@ function endGame() {
 socket.emit('start-game')
 
 socket.on('on-game', (data) => {
-	new p5((p) => {
-		p.draw = () => {
-			noLoop()
-			drawScore(data.score)
-		}
-	})
+	// new p5((p) => {
+	// 	p.draw = () => {
+	// 		noLoop()
+	// 		drawScore(data.score)
+	// 	}
+	// })
+	ServerData = data
+	// drawScore(data.score)
 	socket.emit('on-game', mouse)
 })

@@ -12,5 +12,5 @@ Square.prototype.draw = function () {
 	stroke(255)
 	strokeWeight(3)
 
-	rect(this.position.x, this.position.y, this.size, this.size)
+	rect(this.x, this.y, this.size, this.size)
 }

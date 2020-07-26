@@ -7,7 +7,6 @@ import GameController from '../../modules/game-controller'
 const CustomLog = (socket: socket.Socket) => ({
 	info: (msg = '') => logger.info(`[${socket.id.substring(0, 6)}] ${msg}`),
 })
-
 export default (server: Server) => {
 	const io = socket(server)
 
@@ -20,13 +19,12 @@ export default (server: Server) => {
 			logger.info('on: started-game')
 			if (!gameController || gameController.isEnd()) {
 				gameController = new GameController(Object.keys(io.sockets.sockets))
+				gameController.init()
 			}
 			io.emit('on-game', gameController.parse(socket.id))
 		})
-
-		socket.on('on-game', (data) => {
-			// logger.info('on: on-game')
-			gameController.update(socket.id, data)
+		socket.on('on-game', async (data) => {
+			gameController.updatePlayer(socket.id, data.x, data.y)
 			if (gameController.isEnd()) {
 				io.emit('ended-game', gameController.parse(socket.id))
 			} else {

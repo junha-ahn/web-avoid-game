@@ -3,6 +3,7 @@ import * as Vector from './p5/vector'
 type colorType = [number, number, number]
 
 export class Player {
+	public startedAt
 	public endedAt
 
 	public size
@@ -15,7 +16,11 @@ export class Player {
 
 	constructor(public id) {}
 
+	isPlaying() {
+		return this.startedAt != null && this.endedAt == null
+	}
 	init(x, y, size, color, speed) {
+		this.startedAt = Date.now()
 		this.endedAt = null
 		this.size = size
 		this.color = color

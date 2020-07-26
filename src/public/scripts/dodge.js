@@ -17,23 +17,21 @@ function draw() {
 	if (ServerData.endedAt && Date.now() > ServerData.endedAt + 2000)
 		return endGame()
 
-	drawScore(ServerData.score)
-
-	handlePlayer(ServerData.players)
+	handleMovers(ServerData.movers)
 	handleProjectiles(ServerData.projectiles)
 }
 
-function handlePlayer(players) {
-	for (p of players) {
+function handleMovers(movers) {
+	for (p of movers) {
 		if (p.isMine) drawScore(p.score)
-		const player = new Square(
+		const mover = new Square(
 			p.position.x,
 			p.position.y,
 			p.size,
 			p.isMine ? color('#FFFFFF') : color(p.color),
 		)
 		// 사망 후, 1초 유지
-		if (!p.endedAt || Date.now() < p.endedAt + 1000) player.draw()
+		if (!p.endedAt || Date.now() < p.endedAt + 1000) mover.draw()
 	}
 }
 function handleProjectiles(projectiles) {

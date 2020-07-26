@@ -28,6 +28,10 @@ export default class GameController {
 
 	constructor() {}
 
+	get movers() {
+		return this.players.filter((e) => e.startedAt)
+	}
+
 	async init() {
 		this.startedAt = Date.now()
 		this.endedAt = null
@@ -51,9 +55,9 @@ export default class GameController {
 	}
 
 	private update() {
-		for (const player of this.players.values()) {
-			player.update()
-			if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
+		for (const p of this.movers) {
+			p.update()
+			if (p.isOffscreen(config.WIDTH, config.HEIGHT)) p.end()
 		}
 		this.handleProjectiles()
 		this.addProjectile()
@@ -68,13 +72,12 @@ export default class GameController {
 				? 0
 				: config.HEIGHT
 			: random(config.HEIGHT)
-		const players = Array.from(this.players.values())
 		return new Projectile(
 			x,
 			y,
 			random(35),
 			randomColor(),
-			players[random(players.length - 1)],
+			this.movers[random(this.movers.length - 1)],
 			this.difficulty,
 		)
 	}
@@ -95,9 +98,8 @@ export default class GameController {
 			if (projectiles[i].isOffscreen(config.WIDTH, config.HEIGHT))
 				return projectiles.splice(i, 1)
 
-			const players = this.players.values()
-			for (const player of players) {
-				if (projectiles[i].collidesWith(player)) player.end()
+			for (const p of this.movers) {
+				if (projectiles[i].collidesWith(p)) p.end()
 			}
 		}
 	}
@@ -106,7 +108,7 @@ export default class GameController {
 		this.players.push(new Player(id))
 	}
 	updatePlayer(id: string, x: number, y: number) {
-		const player = this.players.find((p) => p.id === id)
+		const player = this.movers.find((p) => p.id === id)
 		if (!player) return
 		player.updateMouse(x, y)
 	}
@@ -119,7 +121,7 @@ export default class GameController {
 		return this.startedAt != null && this.endedAt == null
 	}
 	isEnd() {
-		const result = this.players.every((p) => p.endedAt)
+		const result = this.movers.every((p) => p.endedAt)
 		if (result) this.endedAt = Date.now()
 		return result
 	}
@@ -127,15 +129,16 @@ export default class GameController {
 	 * @param  {string} id player socket id
 	 */
 	parse(id: string) {
+		const parse = (p) => ({
+			isMine: p.id === id,
+			score: (p.endedAt ? p.endedAt : Date.now()) - this.startedAt,
+			...p,
+		})
 		return {
 			startedAt: this.startedAt,
 			endedAt: this.endedAt,
-
-			players: this.players.map((p) => ({
-				isMine: p.id === id,
-				score: (p.endedAt ? p.endedAt : Date.now()) - this.startedAt,
-				...p,
-			})),
+			movers: this.movers.map(parse),
+			players: this.players.map(parse),
 			projectiles: this.projectiles,
 		}
 	}

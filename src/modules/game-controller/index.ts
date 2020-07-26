@@ -18,39 +18,46 @@ function sleep(ms) {
 }
 
 export default class GameController {
-	public difficulty = 2
-	public startedAt = Date.now()
-	public endedAt
+	private difficulty = 2
 
-	public players: Map<string, Player>
-	public projectiles: Projectile[] = []
-	/**
-	 * @param  {string[]} players players's socket id
-	 */
-	constructor(players: string[]) {
-		this.players = new Map(
-			players.map((id) => [
-				id,
-				new Player(
-					config.WIDTH / 2,
-					config.HEIGHT / 2,
-					config.PLAYER_SIZE,
-					randomColor(),
-					this.difficulty * 2,
-				),
-			]),
-		)
-	}
+	private startedAt
+	private endedAt
+
+	private players: Player[] = []
+	private projectiles: Projectile[] = []
+
+	constructor() {}
+
 	async init() {
+		this.startedAt = Date.now()
+		this.endedAt = null
+
+		this.players.forEach((p) => {
+			p.init(
+				config.WIDTH / 2,
+				config.HEIGHT / 2,
+				config.PLAYER_SIZE,
+				randomColor(),
+				this.difficulty * 2,
+			)
+		})
+		this.projectiles = []
+
 		while (!this.isEnd()) {
 			this.update()
 			await sleep(10)
 		}
 	}
-	get score() {
-		return Date.now() - this.startedAt
+
+	private update() {
+		for (const player of this.players.values()) {
+			player.update()
+			if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
+		}
+		this.handleProjectiles()
+		this.addProjectile()
 	}
-	createProjectile() {
+	private createProjectile() {
 		const plane = random(1) > 0.5
 
 		/* 모서리에 사각형만 생성하도록 함 */
@@ -70,8 +77,7 @@ export default class GameController {
 			this.difficulty,
 		)
 	}
-
-	addProjectile() {
+	private addProjectile() {
 		const time = Date.now() - this.startedAt
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
 			if (random(this.difficulty) > 1.25)
@@ -79,13 +85,7 @@ export default class GameController {
 			this.difficulty += 0.05
 		}
 	}
-
-	updatePlayer(id: string, x: number, y: number) {
-		const player = this.players.get(id)
-		if (!player) return
-		player.updateMouse(x, y)
-	}
-	handleProjectiles() {
+	private handleProjectiles() {
 		const projectiles = this.projectiles
 		for (let i = projectiles.length - 1; i >= 0; i--) {
 			this.projectiles[i].update()
@@ -101,19 +101,24 @@ export default class GameController {
 		}
 	}
 
-	private update() {
-		for (const player of this.players.values()) {
-			player.update()
-			if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
-		}
-		this.handleProjectiles()
-		this.addProjectile()
+	addPlayer(id: string) {
+		this.players.push(new Player(id))
+	}
+	updatePlayer(id: string, x: number, y: number) {
+		const player = this.players.find((p) => p.id === id)
+		if (!player) return
+		player.updateMouse(x, y)
+	}
+	delPlayer(id: string) {
+		const index = this.players.findIndex((p) => p.id === id)
+		this.players.splice(index, 1)
 	}
 
+	isPlaying() {
+		return !!this.startedAt
+	}
 	isEnd() {
-		const result = Array.from(this.players.entries()).every(
-			([id, player]) => player.endedAt,
-		)
+		const result = this.players.every((p) => p.endedAt)
 		if (result) this.endedAt = Date.now()
 		return result
 	}
@@ -121,15 +126,14 @@ export default class GameController {
 	 * @param  {string} id player socket id
 	 */
 	parse(id: string) {
-		const entries = Array.from(this.players.entries())
 		return {
-			score: this.score,
 			startedAt: this.startedAt,
 			endedAt: this.endedAt,
-			players: entries.map(([pid, pValue]) => ({
-				// isEnd: false,
-				isMine: pid === id,
-				...pValue,
+
+			players: this.players.map((p) => ({
+				isMine: p.id === id,
+				score: (p.endedAt ? p.endedAt : Date.now()) - this.startedAt,
+				...p,
 			})),
 			projectiles: this.projectiles,
 		}

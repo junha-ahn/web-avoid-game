@@ -10,19 +10,21 @@ const CustomLog = (socket: socket.Socket) => ({
 export default (server: Server) => {
 	const io = socket(server)
 
-	let gameController: GameController
+	const gameController = new GameController()
 	io.on('connection', (socket) => {
 		const logger = CustomLog(socket)
 		logger.info(`connected`)
 
+		gameController.addPlayer(socket.id)
+		socket.emit('connected-player', Object.keys(io.sockets.sockets))
+
 		socket.on('start-game', () => {
-			logger.info('on: started-game')
-			if (!gameController || gameController.isEnd()) {
-				gameController = new GameController(Object.keys(io.sockets.sockets))
+			if (!gameController.isPlaying() || gameController.isEnd()) {
 				gameController.init()
+				io.emit('on-game', gameController.parse(socket.id))
 			}
-			io.emit('on-game', gameController.parse(socket.id))
 		})
+
 		socket.on('on-game', async (data) => {
 			gameController.updatePlayer(socket.id, data.x, data.y)
 			if (gameController.isEnd()) {
@@ -30,6 +32,11 @@ export default (server: Server) => {
 			} else {
 				io.emit('on-game', gameController.parse(socket.id))
 			}
+		})
+
+		socket.on('disconnect', () => {
+			logger.info(`disconnect`)
+			gameController.delPlayer(socket.id)
 		})
 	})
 }

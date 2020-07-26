@@ -4,12 +4,23 @@ type colorType = [number, number, number]
 
 export class Player {
 	public endedAt
+
+	public size
+	public color: colorType
+	public speed
 	public position
 	public velocity
 	public acceleration
 	public mouse = { x: 0, y: 0 }
 
-	constructor(x, y, public size, public color: colorType, public speed) {
+	constructor(public id) {}
+
+	init(x, y, size, color, speed) {
+		this.endedAt = null
+		this.size = size
+		this.color = color
+		this.speed = speed
+
 		this.position = new Vector(x, y)
 		this.velocity = new Vector()
 		this.acceleration = new Vector()

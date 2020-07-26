@@ -15,7 +15,7 @@ export class Player {
 		this.acceleration = new Vector()
 	}
 	end() {
-		this.endedAt = Date.now
+		this.endedAt = Date.now()
 	}
 	updateMouse(x: number, y: number) {
 		this.mouse.x = x
@@ -72,9 +72,12 @@ export class Projectile {
 			center.y > rightBound.y
 		)
 	}
-	setVelocity(vel1, vel2) {
+	setVelocity(vel1, vel2?: Player) {
 		if (vel1 != null && vel2 != null) {
-			const velocity = new Vector(vel2.x - vel1.x, vel2.y - vel1.y)
+			const velocity = new Vector(
+				vel2.position.x - vel1.x,
+				vel2.position.y - vel1.y,
+			)
 			velocity.setMag(this.speed)
 			return velocity
 		}

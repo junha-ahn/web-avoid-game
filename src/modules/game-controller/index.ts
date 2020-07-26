@@ -73,9 +73,9 @@ export default class GameController {
 	addProjectile() {
 		const time = Date.now() - this.startedAt
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
-			// if (random(this.difficulty) > 1.25)
-			// 	this.projectiles.push(this.createProjectile())
-			this.difficulty += 0.1
+			if (random(this.difficulty) > 1.25)
+				this.projectiles.push(this.createProjectile())
+			this.difficulty += 0.05
 		}
 	}
 
@@ -103,7 +103,6 @@ export default class GameController {
 	private update() {
 		for (const player of this.players.values()) {
 			player.update()
-			console.log(player)
 			if (player.isOffscreen(config.WIDTH, config.HEIGHT)) player.end()
 		}
 		this.handleProjectiles()

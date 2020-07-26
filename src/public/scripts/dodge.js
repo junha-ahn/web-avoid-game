@@ -47,10 +47,10 @@ function drawScore(score) {
 	text(score, width / 2, 50)
 }
 function endGame() {
-	noLoop()
-	textSize(70)
-	fill(255)
-	noStroke()
+	// noLoop()
+	// textSize(70)
+	// fill(255)
+	// noStroke()
 	text('Game Over!', width / 2, height / 2)
-	textSize(40)
+	// textSize(40)
 }

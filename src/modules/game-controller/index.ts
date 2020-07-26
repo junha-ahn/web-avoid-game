@@ -31,6 +31,7 @@ export default class GameController {
 	async init() {
 		this.startedAt = Date.now()
 		this.endedAt = null
+		this.difficulty = 2
 
 		this.players.forEach((p) => {
 			p.init(
@@ -115,7 +116,7 @@ export default class GameController {
 	}
 
 	isPlaying() {
-		return !!this.startedAt
+		return this.startedAt != null && this.endedAt == null
 	}
 	isEnd() {
 		const result = this.players.every((p) => p.endedAt)

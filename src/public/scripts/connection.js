@@ -7,9 +7,10 @@ const mouse = {
 let ServerData
 
 function startGame() {
-	console.log('click startGame')
+	console.log('start Game!!')
 	socket.emit('start-game')
 }
+startGame()
 
 socket.on('on-game', (data) => {
 	ServerData = data
@@ -17,4 +18,6 @@ socket.on('on-game', (data) => {
 })
 socket.on('ended-game', (data) => {
 	ServerData = data
+
+	setTimeout(startGame, 5000)
 })

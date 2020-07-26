@@ -72,12 +72,13 @@ export default class GameController {
 				? 0
 				: config.HEIGHT
 			: random(config.HEIGHT)
+
 		return new Projectile(
 			x,
 			y,
 			random(35),
 			randomColor(),
-			this.movers[random(this.movers.length - 1)],
+			this.movers[parseInt(`${random(this.movers.length - 1)}`)],
 			this.difficulty,
 		)
 	}

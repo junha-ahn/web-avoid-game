@@ -22,9 +22,12 @@ function draw() {
 }
 
 function handleMovers(movers) {
+	console.log('handleMovers')
 	for (p of movers) {
 		if (p.isMine) drawScore(p.score)
-		const mover = new Square(
+
+		const mover = new Mover(
+			circle,
 			p.position.x,
 			p.position.y,
 			p.size,
@@ -36,7 +39,13 @@ function handleMovers(movers) {
 }
 function handleProjectiles(projectiles) {
 	for (p of projectiles) {
-		const projectiles = new Square(p.position.x, p.position.y, p.size, p.color)
+		const projectiles = new Mover(
+			rect,
+			p.position.x,
+			p.position.y,
+			p.size,
+			p.color,
+		)
 		projectiles.draw()
 	}
 }

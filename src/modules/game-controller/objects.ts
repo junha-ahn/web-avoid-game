@@ -71,6 +71,8 @@ export class Projectile {
 		this.velocity = this.setVelocity(this.position, player)
 	}
 	collidesWith(player: Player) {
+		//#FIXME: 원형 기준 계산 필요
+
 		// 투사체(this) 위치 계산
 		const cX = this.position.x + this.size / 2
 		const cY = this.position.y + this.size / 2

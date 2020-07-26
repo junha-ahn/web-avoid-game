@@ -7,7 +7,6 @@ const mouse = {
 let ServerData
 
 function startGame() {
-	console.log('start Game!!')
 	socket.emit('start-game')
 }
 startGame()

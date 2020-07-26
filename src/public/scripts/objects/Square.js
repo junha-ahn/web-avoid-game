@@ -1,5 +1,6 @@
-class Square {
-	constructor(x, y, size, color) {
+class Mover {
+	constructor(maker, x, y, size, color) {
+		this.maker = maker
 		this.x = x
 		this.y = y
 		this.size = size
@@ -7,10 +8,10 @@ class Square {
 	}
 }
 
-Square.prototype.draw = function () {
+Mover.prototype.draw = function () {
 	fill(this.color)
 	stroke(255)
 	strokeWeight(3)
 
-	rect(this.x, this.y, this.size, this.size)
+	this.maker(this.x, this.y, this.size, this.size)
 }

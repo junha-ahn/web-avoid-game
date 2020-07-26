@@ -20,6 +20,7 @@ function sleep(ms) {
 export default class GameController {
 	public difficulty = 2
 	public startedAt = Date.now()
+	public endedAt
 
 	public players: Map<string, Player>
 	public projectiles: Projectile[] = []
@@ -110,9 +111,11 @@ export default class GameController {
 	}
 
 	isEnd() {
-		return Array.from(this.players.entries()).every(
+		const result = Array.from(this.players.entries()).every(
 			([id, player]) => player.endedAt,
 		)
+		if (result) this.endedAt = Date.now()
+		return result
 	}
 	/**
 	 * @param  {string} id player socket id
@@ -122,6 +125,7 @@ export default class GameController {
 		return {
 			score: this.score,
 			startedAt: this.startedAt,
+			endedAt: this.endedAt,
 			players: entries.map(([pid, pValue]) => ({
 				// isEnd: false,
 				isMine: pid === id,

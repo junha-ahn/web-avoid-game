@@ -22,6 +22,9 @@ function draw() {
 	mouse.y = mouseY
 
 	background(53) // 캔버스 바탕 화면 색상
+
+	if (ServerData.endedAt) return endGame()
+
 	drawScore(ServerData.score)
 
 	handleProjectiles(ServerData.projectiles)
@@ -34,7 +37,7 @@ function handlePlayer(players) {
 			p.position.x,
 			p.position.y,
 			p.size,
-			p.isMinse ? color('#FFFFFF') : color(p.color),
+			p.isMine ? color('#FFFFFF') : color(p.color),
 		)
 		player.draw()
 	}
@@ -63,13 +66,10 @@ function endGame() {
 socket.emit('start-game')
 
 socket.on('on-game', (data) => {
-	// new p5((p) => {
-	// 	p.draw = () => {
-	// 		noLoop()
-	// 		drawScore(data.score)
-	// 	}
-	// })
 	ServerData = data
-	// drawScore(data.score)
 	socket.emit('on-game', mouse)
+})
+
+socket.on('ended-game', (data) => {
+	endGame()
 })

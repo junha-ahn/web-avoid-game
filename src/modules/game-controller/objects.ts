@@ -22,6 +22,7 @@ export class Player {
 		return this.startedAt != null && this.endedAt == null
 	}
 	init(x, y, size, color, speed) {
+		this.life = DEFAULT_LIFE
 		this.startedAt = Date.now()
 		this.endedAt = null
 		this.size = size

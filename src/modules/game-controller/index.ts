@@ -53,7 +53,12 @@ export default class GameController {
 	}
 
 	private update() {
-		for (const p of this.movers) {
+		for (let i = this.movers.length - 1; i >= 0; i--) {
+			const p = this.movers[i]
+			if (this.isDisConnect(p.sequence)) {
+				this.delPlayer(p.id)
+				continue
+			}
 			p.update()
 			if (p.isOffscreen(config.WIDTH, config.HEIGHT)) p.end()
 		}
@@ -144,6 +149,11 @@ export default class GameController {
 		this.players.splice(index, 1)
 	}
 
+	// 브라우저 강제 종료시 동작
+	private isDisConnect(time) {
+		const ONE_SEC = 3000
+		return time === 0 ? false : Date.now() - ONE_SEC > time
+	}
 	isPlaying() {
 		return this.startedAt != null && this.endedAt == null
 	}

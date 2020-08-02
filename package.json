@@ -5,7 +5,6 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node dist/index.js",
-		"compile": "tsc",
 		"html": "cp -r ./src/public/ ./dist/public/",
 		"p5": "cp -r ./src/modules/game-controller/p5 ./dist/modules/game-controller/p5",
 		"prestart": "npm run compile && npm run html && npm run p5",

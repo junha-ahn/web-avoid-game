@@ -100,7 +100,10 @@ export default class GameController {
 				return projectiles.splice(i, 1)
 
 			for (const p of this.movers) {
-				if (projectiles[i].collidesWith(p)) p.end()
+				if (projectiles[i].collidesWith(p)) {
+					p.crashed()
+					projectiles.splice(i, 1)
+				}
 			}
 		}
 	}

@@ -62,10 +62,8 @@ export default class GameController {
 		this.handleProjectiles()
 		this.addProjectile()
 	}
-	private createProjectile() {
+	private getRandomEdge() {
 		const plane = random(1) > 0.5
-
-		/* 모서리에 사각형만 생성하도록 함 */
 		const x = plane ? random(config.WIDTH) : random(1) > 0.5 ? 0 : config.WIDTH
 		const y = plane
 			? random(1) > 0.5
@@ -73,7 +71,13 @@ export default class GameController {
 				: config.HEIGHT
 			: random(config.HEIGHT)
 
+		return [x, y]
+	}
+	private createProjectile() {
+		const [x, y] = this.getRandomEdge()
+
 		return new Projectile(
+			false,
 			x,
 			y,
 			random(35),
@@ -82,11 +86,29 @@ export default class GameController {
 			this.difficulty,
 		)
 	}
+
+	private createItem() {
+		console.log('createItem')
+		const [x, y] = this.getRandomEdge()
+
+		return new Projectile(
+			true,
+			x,
+			y,
+			10,
+			randomColor(),
+			this.movers[parseInt(`${random(this.movers.length - 1)}`)],
+			this.difficulty,
+		)
+	}
+
 	private addProjectile() {
 		const time = Date.now() - this.startedAt
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
 			if (random(this.difficulty) > 1.25)
 				this.projectiles.push(this.createProjectile())
+			// if (random(this.difficulty) > 1.25)
+			// 	this.projectiles.push(this.createItem())
 			this.difficulty += 0.025
 		}
 	}

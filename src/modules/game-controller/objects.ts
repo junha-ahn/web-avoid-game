@@ -63,6 +63,7 @@ export class Projectile {
 	public position
 	public velocity
 	constructor(
+		public isItem,
 		x,
 		y,
 		public size,

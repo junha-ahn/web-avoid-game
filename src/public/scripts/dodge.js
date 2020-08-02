@@ -26,7 +26,7 @@ function handleMovers(movers) {
 		if (p.isMine) drawScore(p.score)
 
 		const mover = new Mover(
-			true,
+			'player',
 			p.position.x,
 			p.position.y,
 			p.size,
@@ -39,7 +39,7 @@ function handleMovers(movers) {
 function handleProjectiles(projectiles) {
 	for (p of projectiles) {
 		const projectiles = new Mover(
-			false,
+			p.isItem ? 'item' : 'projectile',
 			p.position.x,
 			p.position.y,
 			p.size,

@@ -12,7 +12,7 @@ Mover.prototype.draw = function () {
 	fill(this.color)
 
 	if (this.isPlayer) {
-		circle(this.x, this.y, this.size / 2)
+		ellipse(this.x, this.y, this.size / 2, this.size / 2)
 	} else {
 		stroke(255)
 		strokeWeight(3)

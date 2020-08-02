@@ -75,8 +75,8 @@ export class Projectile {
 		//#FIXME: 원형 기준 계산 필요
 
 		// 투사체(this) 위치 계산
-		const cX = this.position.x + this.size / 2
-		const cY = this.position.y + this.size / 2
+		const cX = this.position.x + this.size
+		const cY = this.position.y + this.size
 		const center = new Vector(cX, cY)
 
 		// player 위치 계산

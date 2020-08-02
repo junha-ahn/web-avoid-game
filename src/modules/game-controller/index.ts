@@ -27,7 +27,7 @@ export default class GameController {
 	constructor() {}
 
 	get movers() {
-		return this.players.filter((e) => e.startedAt)
+		return this.players.filter((p) => p.isPlaying())
 	}
 
 	async init() {
@@ -53,14 +53,15 @@ export default class GameController {
 	}
 
 	private update() {
-		for (let i = this.movers.length - 1; i >= 0; i--) {
-			const p = this.movers[i]
+		for (let i = this.players.length - 1; i >= 0; i--) {
+			const p = this.players[i]
 			if (this.isDisConnect(p.sequence)) {
 				this.delPlayer(p.id)
 				continue
+			} else if (p.isPlaying()) {
+				p.update()
+				if (p.isOffscreen(config.WIDTH, config.HEIGHT)) p.end()
 			}
-			p.update()
-			if (p.isOffscreen(config.WIDTH, config.HEIGHT)) p.end()
 		}
 		this.handleProjectiles()
 		this.addProjectile()
@@ -138,21 +139,24 @@ export default class GameController {
 		this.players.push(new Player(id))
 	}
 	updatePlayer(id: string, x: number, y: number, sequence?: number) {
-		const player = this.movers.find((p) => p.id === id)
-		if (!player) return
+		const player = this.players.find((p) => p.id === id)
 		if (player.sequence > sequence) return console.log('ignore updatePlayer')
 		player.sequence = sequence
+		if (!player.isPlaying()) return
 		player.updateMouse(x, y)
 	}
 	delPlayer(id: string) {
 		const index = this.players.findIndex((p) => p.id === id)
-		this.players.splice(index, 1)
+		if (index >= 0) this.players.splice(index, 1)
 	}
 
 	// 브라우저 강제 종료시 동작
-	private isDisConnect(time) {
-		const ONE_SEC = 3000
-		return time === 0 ? false : Date.now() - ONE_SEC > time
+	isDisConnect(time) {
+		const result =
+			time === null
+				? Date.now() - this.startedAt > 3000
+				: Date.now() - time > 3000
+		return result
 	}
 	isPlaying() {
 		return this.startedAt != null && this.endedAt == null
@@ -166,17 +170,24 @@ export default class GameController {
 	 * @param  {string} id player socket id
 	 */
 	parse(id: string) {
+		const compare = (a, b) =>
+			a.score > b.score ? -1 : a.score < b.score ? 1 : 0
+		const getScore = (p: Player) => {
+			if (!p.startedAt) return 0
+			if (p.endedAt) return p.endedAt - this.startedAt
+			return Date.now() - this.startedAt // playing..
+		}
 		const parse = (p) => ({
 			isMine: p.id === id,
-			score: (p.endedAt ? p.endedAt : Date.now()) - this.startedAt,
+			score: getScore(p),
 			...p,
 		})
 		return {
 			sequence: Date.now(),
 			startedAt: this.startedAt,
 			endedAt: this.endedAt,
-			movers: this.movers.map(parse),
-			players: this.players.map(parse),
+			movers: this.movers.map(parse).sort(compare),
+			players: this.players.map(parse).sort(compare),
 			projectiles: this.projectiles,
 		}
 	}

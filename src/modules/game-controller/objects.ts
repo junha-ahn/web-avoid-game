@@ -3,7 +3,7 @@ import * as Vector from './p5/vector'
 type colorType = [number, number, number]
 const DEFAULT_LIFE = 2
 export class Player {
-	public sequence = 0
+	public sequence
 	public startedAt
 	public endedAt
 
@@ -28,6 +28,7 @@ export class Player {
 		this.size = size
 		this.color = color
 		this.speed = speed
+		this.sequence = null
 
 		this.position = new Vector(x, y)
 		this.velocity = new Vector()

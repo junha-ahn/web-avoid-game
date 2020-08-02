@@ -88,14 +88,13 @@ export default class GameController {
 	}
 
 	private createItem() {
-		console.log('createItem')
 		const [x, y] = this.getRandomEdge()
 
 		return new Projectile(
 			true,
 			x,
 			y,
-			10,
+			20,
 			randomColor(),
 			this.movers[parseInt(`${random(this.movers.length - 1)}`)],
 			this.difficulty,
@@ -107,23 +106,25 @@ export default class GameController {
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
 			if (random(this.difficulty) > 1.25)
 				this.projectiles.push(this.createProjectile())
-			// if (random(this.difficulty) > 1.25)
-			// 	this.projectiles.push(this.createItem())
+			else if (random(this.difficulty) < 0.25)
+				this.projectiles.push(this.createItem())
 			this.difficulty += 0.025
 		}
 	}
 	private handleProjectiles() {
 		const projectiles = this.projectiles
 		for (let i = projectiles.length - 1; i >= 0; i--) {
-			this.projectiles[i].update()
+			const projectile = projectiles[i]
+			projectile.update()
 
 			// 투사체가 스크린 밖으로 나가면
-			if (projectiles[i].isOffscreen(config.WIDTH, config.HEIGHT))
+			if (projectile.isOffscreen(config.WIDTH, config.HEIGHT))
 				return projectiles.splice(i, 1)
 
 			for (const p of this.movers) {
-				if (projectiles[i].collidesWith(p)) {
-					p.crashed()
+				if (projectile.collidesWith(p)) {
+					if (projectile.isItem) p.life++
+					else p.crashed()
 					projectiles.splice(i, 1)
 				}
 			}

@@ -68,3 +68,10 @@
   text-align:center;
   width: calc(100% /3);
 }
+
+.diedUser {
+  background: rgba(0,0,0,0.2) !important;
+}
+.diedUser td {
+  color: #6f6f6f !important;
+}

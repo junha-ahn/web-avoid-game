@@ -14,6 +14,7 @@ startGame()
 socket.on('on-game', (data) => {
 	if (ServerData == null || data.sequence >= ServerData.sequence) {
 		ServerData = data
+		// PlayerList(data.players)
 		socket.emit('on-game', {
 			sequence: Date.now(),
 			...mouse,

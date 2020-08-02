@@ -16,6 +16,7 @@ function PlayerList(players) {
 	
 	for (let i = 0; i < players.length; i++) {
 		if (players[i].isMine) {
+			MyLife(players[i].life)
 			const myScoreArea = document.querySelector('.myScore')
 			myScoreArea.querySelector('tr > td:nth-child(1)').innerText = i + 1;
 			myScoreArea.querySelector('tr > td:nth-child(2)').innerText = getNameFromID(players[i].id)
@@ -32,6 +33,15 @@ function PlayerList(players) {
 			}
 		}
 	}
+}
+function MyLife(life) {
+	let heart = '' 
+
+	for (let i=0; i<life; i++) {
+		heart += '<img src="./images/heart.png" style="margin-right:2px;">'
+	}
+
+	document.querySelector('.lifeArea').innerHTML = heart
 }
 
 function getNameFromID(id) {

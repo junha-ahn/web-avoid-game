@@ -25,6 +25,7 @@
   width: 300px;
   height: auto;
 }
+
 .userScore {
   height: 100%;
   border-collapse: collapse;
@@ -32,15 +33,18 @@
   border-radius: 15px 15px 0 0;
   width: 300px;
 }
+
 .userScore .title {
   border-bottom: 1px solid #353535;
 }
+
 .userScore .title th {
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
   width: calc(100% /3);
 }
+
 .userScore td,
 .userScore th {
   height: 30px;
@@ -65,13 +69,32 @@
 .myScore td {
   color: #fdff62 !important;
   height: 30px;
-  text-align:center;
+  text-align: center;
   width: calc(100% /3);
 }
 
 .diedUser {
-  background: rgba(0,0,0,0.2) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
 }
+
 .diedUser td {
   color: #6f6f6f !important;
+}
+
+/* 목숨영역 */
+.lifeArea {
+  width: 140px;
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 750px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1000;
+  display: block;
+  vertical-align: middle;
+}
+
+.lifeArea>img {
+  width: 20px;
 }

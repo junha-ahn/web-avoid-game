@@ -79,8 +79,8 @@ export class Projectile {
 		const center = new Vector(cX, cY)
 
 		// player 위치 계산
-		const rX = player.position.x + player.size
-		const rY = player.position.y + player.size
+		const rX = player.position.x + player.size / 2
+		const rY = player.position.y + player.size / 2
 		const rightBound = new Vector(rX, rY)
 
 		return !(

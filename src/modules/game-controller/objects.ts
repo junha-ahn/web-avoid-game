@@ -1,12 +1,13 @@
 import * as Vector from './p5/vector'
 
 type colorType = [number, number, number]
-
+const DEFAULT_LIFE = 2
 export class Player {
 	public sequence = 0
 	public startedAt
 	public endedAt
 
+	public life = DEFAULT_LIFE
 	public size
 	public color: colorType
 	public speed
@@ -30,6 +31,9 @@ export class Player {
 		this.position = new Vector(x, y)
 		this.velocity = new Vector()
 		this.acceleration = new Vector()
+	}
+	crashed() {
+		if (--this.life <= 0) this.end()
 	}
 	end() {
 		this.endedAt = Date.now()
@@ -60,6 +64,7 @@ export class Projectile {
 	public position
 	public velocity
 	constructor(
+		public isItem,
 		x,
 		y,
 		public size,

@@ -10,8 +10,14 @@ function draw() {
 
 	mouse.x = mouseX
 	mouse.y = mouseY
-
 	background(53)
+
+	// const x = 60
+	// const y = 40
+	// const size = 30
+	// triangle(a, b, 위 꼭지점 x, 맨 꼭지점 y, e,f,g)
+	// triangle(30, 75 - 10, 58, 20 - 10, 86, 75 - 10)
+	// triangle(x, y, x + size / 2, y - size / 2, x + size, y)
 
 	if (!ServerData) return
 	if (ServerData.endedAt && Date.now() > ServerData.endedAt + 2000)
@@ -26,7 +32,7 @@ function handleMovers(movers) {
 		if (p.isMine) drawScore(p.score)
 
 		const mover = new Mover(
-			true,
+			'player',
 			p.position.x,
 			p.position.y,
 			p.size,
@@ -39,7 +45,7 @@ function handleMovers(movers) {
 function handleProjectiles(projectiles) {
 	for (p of projectiles) {
 		const projectiles = new Mover(
-			false,
+			p.isItem ? 'item' : 'projectile',
 			p.position.x,
 			p.position.y,
 			p.size,

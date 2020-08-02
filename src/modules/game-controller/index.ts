@@ -60,10 +60,8 @@ export default class GameController {
 		this.handleProjectiles()
 		this.addProjectile()
 	}
-	private createProjectile() {
+	private getRandomEdge() {
 		const plane = random(1) > 0.5
-
-		/* 모서리에 사각형만 생성하도록 함 */
 		const x = plane ? random(config.WIDTH) : random(1) > 0.5 ? 0 : config.WIDTH
 		const y = plane
 			? random(1) > 0.5
@@ -71,7 +69,13 @@ export default class GameController {
 				: config.HEIGHT
 			: random(config.HEIGHT)
 
+		return [x, y]
+	}
+	private createProjectile() {
+		const [x, y] = this.getRandomEdge()
+
 		return new Projectile(
+			false,
 			x,
 			y,
 			random(35),
@@ -80,25 +84,47 @@ export default class GameController {
 			this.difficulty,
 		)
 	}
+
+	private createItem() {
+		const [x, y] = this.getRandomEdge()
+
+		return new Projectile(
+			true,
+			x,
+			y,
+			20,
+			randomColor(),
+			this.movers[parseInt(`${random(this.movers.length - 1)}`)],
+			this.difficulty,
+		)
+	}
+
 	private addProjectile() {
 		const time = Date.now() - this.startedAt
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
 			if (random(this.difficulty) > 1.25)
 				this.projectiles.push(this.createProjectile())
+			else if (random(this.difficulty) < 0.25)
+				this.projectiles.push(this.createItem())
 			this.difficulty += 0.025
 		}
 	}
 	private handleProjectiles() {
 		const projectiles = this.projectiles
 		for (let i = projectiles.length - 1; i >= 0; i--) {
-			this.projectiles[i].update()
+			const projectile = projectiles[i]
+			projectile.update()
 
 			// 투사체가 스크린 밖으로 나가면
-			if (projectiles[i].isOffscreen(config.WIDTH, config.HEIGHT))
+			if (projectile.isOffscreen(config.WIDTH, config.HEIGHT))
 				return projectiles.splice(i, 1)
 
 			for (const p of this.movers) {
-				if (projectiles[i].collidesWith(p)) p.end()
+				if (projectile.collidesWith(p)) {
+					if (projectile.isItem) p.life++
+					else p.crashed()
+					projectiles.splice(i, 1)
+				}
 			}
 		}
 	}

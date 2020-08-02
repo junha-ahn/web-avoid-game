@@ -1,6 +1,6 @@
 class Mover {
-	constructor(isPlayer, x, y, size, color) {
-		this.isPlayer = isPlayer
+	constructor(type, x, y, size, color) {
+		this.type = type
 		this.x = x
 		this.y = y
 		this.size = size
@@ -11,8 +11,17 @@ class Mover {
 Mover.prototype.draw = function () {
 	fill(this.color)
 
-	if (this.isPlayer) {
+	if (this.type === 'player') {
 		ellipse(this.x, this.y, this.size / 2, this.size / 2)
+	} else if (this.type === 'item') {
+		triangle(
+			this.x,
+			this.y,
+			this.x + this.size / 2,
+			this.y - this.size,
+			this.x + this.size,
+			this.y,
+		)
 	} else {
 		stroke(255)
 		strokeWeight(3)

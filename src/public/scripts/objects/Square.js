@@ -1,6 +1,6 @@
 class Mover {
-	constructor(maker, x, y, size, color) {
-		this.maker = maker
+	constructor(isPlayer, x, y, size, color) {
+		this.isPlayer = isPlayer
 		this.x = x
 		this.y = y
 		this.size = size
@@ -10,8 +10,12 @@ class Mover {
 
 Mover.prototype.draw = function () {
 	fill(this.color)
-	stroke(255)
-	strokeWeight(3)
 
-	this.maker(this.x, this.y, this.size, this.size)
+	if (this.isPlayer) {
+		circle(this.x, this.y, this.size / 2)
+	} else {
+		stroke(255)
+		strokeWeight(3)
+		rect(this.x, this.y, this.size, this.size)
+	}
 }

@@ -28,8 +28,8 @@ export default (server: Server) => {
 				io.emit('on-game', gameController.parse(socket.id))
 			}
 		})
-
 		socket.on('on-game', async (data) => {
+			//#FIXME: network time 일정하지 않음
 			gameController.updatePlayer(socket.id, data.x, data.y)
 			if (gameController.isEnd()) {
 				socket.emit('ended-game', gameController.parse(socket.id))

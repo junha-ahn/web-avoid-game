@@ -87,7 +87,7 @@ export default class GameController {
 		if (this.projectiles.length <= time / config.PROJECTILE_RESPONSE_TIME) {
 			if (random(this.difficulty) > 1.25)
 				this.projectiles.push(this.createProjectile())
-			this.difficulty += 0.05
+			this.difficulty += 0.025
 		}
 	}
 	private handleProjectiles() {

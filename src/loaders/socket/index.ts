@@ -3,6 +3,7 @@ import { Server } from 'http'
 
 import logger from '../../modules/logger'
 import GameController from '../../modules/game-controller'
+import { sleep } from '../../modules/helpers'
 
 const CustomLog = (socket: socket.Socket) => ({
 	info: (msg = '') => logger.info(`[${socket.id.substring(0, 6)}] ${msg}`),
@@ -20,22 +21,27 @@ export default (server: Server) => {
 		gameController.addPlayer(socket.id)
 		socket.emit('connected-player', Object.keys(io.sockets.sockets))
 
-		socket.on('start-game', () => {
-			if (gameController.isPlaying()) {
-				socket.emit('on-game', gameController.parse(socket.id))
-			} else if (gameController.isEnd()) {
+		/*
+			주기적으로 socket 통신을 전송함 (양측)
+			다만 시퀀스 값을 주어
+		*/
+		socket.on('start-game', async () => {
+			if (gameController.isEnd()) {
 				gameController.init()
-				io.emit('on-game', gameController.parse(socket.id))
+			}
+
+			while (1) {
+				if (gameController.isEnd()) {
+					socket.emit('ended-game', gameController.parse(socket.id))
+					break
+				} else if (gameController.isPlaying()) {
+					socket.emit('on-game', gameController.parse(socket.id))
+				}
+				await sleep(10)
 			}
 		})
 		socket.on('on-game', async (data) => {
-			//#FIXME: network time 일정하지 않음
-			gameController.updatePlayer(socket.id, data.x, data.y)
-			if (gameController.isEnd()) {
-				socket.emit('ended-game', gameController.parse(socket.id))
-			} else {
-				socket.emit('on-game', gameController.parse(socket.id))
-			}
+			gameController.updatePlayer(socket.id, data.x, data.y, data.sequence)
 		})
 
 		socket.on('disconnect', () => {

@@ -12,8 +12,15 @@ function startGame() {
 startGame()
 
 socket.on('on-game', (data) => {
-	ServerData = data
-	socket.emit('on-game', mouse)
+	if (ServerData == null || data.sequence >= ServerData.sequence) {
+		ServerData = data
+		socket.emit('on-game', {
+			sequence: Date.now(),
+			...mouse,
+		})
+	} else {
+		console.log('ignore on-game')
+	}
 })
 socket.on('ended-game', (data) => {
 	ServerData = data

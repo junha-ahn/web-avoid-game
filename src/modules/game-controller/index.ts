@@ -1,4 +1,5 @@
 import { Player, Projectile } from './objects'
+import { sleep } from '../helpers'
 
 const config = {
 	WIDTH: 1000,
@@ -13,9 +14,6 @@ const randomColor = (): [number, number, number] => [
 	random(255),
 	random(255),
 ]
-function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms))
-}
 
 export default class GameController {
 	private difficulty = 2
@@ -108,9 +106,11 @@ export default class GameController {
 	addPlayer(id: string) {
 		this.players.push(new Player(id))
 	}
-	updatePlayer(id: string, x: number, y: number) {
+	updatePlayer(id: string, x: number, y: number, sequence?: number) {
 		const player = this.movers.find((p) => p.id === id)
 		if (!player) return
+		if (player.sequence > sequence) return console.log('ignore updatePlayer')
+		player.sequence = sequence
 		player.updateMouse(x, y)
 	}
 	delPlayer(id: string) {
@@ -136,6 +136,7 @@ export default class GameController {
 			...p,
 		})
 		return {
+			sequence: Date.now(),
 			startedAt: this.startedAt,
 			endedAt: this.endedAt,
 			movers: this.movers.map(parse),

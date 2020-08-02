@@ -3,6 +3,7 @@ import * as Vector from './p5/vector'
 type colorType = [number, number, number]
 
 export class Player {
+	public sequence = 0
 	public startedAt
 	public endedAt
 

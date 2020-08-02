@@ -1,5 +1,6 @@
 function setup() {
-	createCanvas(1000, 800)
+	let myCanvas = createCanvas(1000, 800)
+	myCanvas.parent('myCanvas');
 
 	textAlign(CENTER)
 	textSize(40)

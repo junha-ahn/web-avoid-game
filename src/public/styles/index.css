@@ -1,0 +1,70 @@
+#myCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 1000px;
+}
+
+.p5Canvas {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.userArea {
+  position: absolute;
+  top: 80px;
+  left: 650px;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1000;
+  width: 300px;
+  height: auto;
+}
+.userScore {
+  height: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px 15px 0 0;
+  width: 300px;
+}
+.userScore .title {
+  border-bottom: 1px solid #353535;
+}
+.userScore .title th {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  width: calc(100% /3);
+}
+.userScore td,
+.userScore th {
+  height: 30px;
+}
+
+.userScore tr td {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.myScore {
+  height: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 15px 15px;
+  width: 300px;
+  margin-top: 1px;
+}
+
+.myScore td {
+  color: #fdff62 !important;
+  height: 30px;
+  text-align:center;
+  width: calc(100% /3);
+}

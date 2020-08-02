@@ -5,10 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node dist/index.js",
-		"build": "tsc",
+		"build": "tsc && npm run html && npm run p5",
 		"html": "cp -r ./src/public/ ./dist/public/",
 		"p5": "cp -r ./src/modules/game-controller/p5 ./dist/modules/game-controller/p5",
-		"prestart": "npm run build && npm run html && npm run p5",
 		"dev": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/index.ts"
 	},
 	"repository": {
